@@ -3,6 +3,17 @@ Nitrate - Grow your Orchard
 
 Nitrate is a set of scripts aimed at making your life easier when developing with the Orchard CMS.
 
+Features
+---
+
+* Commit only your code to source control.
+* Easily build and keep a consistent environment across a team.
+* Automatically configure IIS and SQL Server.
+* Easy database backup and restore (useful to test migrations or 3rd party modules).
+* Git style commands work from anywhere in your environment path.
+* Synchronize your site with FTP (experimental)
+* Anything you contribute!
+
 Requirements
 ---
 
@@ -12,13 +23,13 @@ Requirements
 * PowerShell
 * Visual Studio 2010 or 2012
 * A Microsoft SQL Server instance accessible
- * Use Mixed Mode Authentication
+	* Use Mixed Mode Authentication
 * The SQL Server SMO:
- * [32bits package for SQL Server 2012](http://go.microsoft.com/fwlink/?LinkID=239658&clcid=0x409)
- * [64bits package for SQL Server 2012](http://go.microsoft.com/fwlink/?LinkID=239659&clcid=0x409)
+	* [32bits package for SQL Server 2012](http://go.microsoft.com/fwlink/?LinkID=239658&clcid=0x409)
+	* [64bits package for SQL Server 2012](http://go.microsoft.com/fwlink/?LinkID=239659&clcid=0x409)
 * The SQL Server provider for PowerShell:
- * [32bits package for SQL Server 2012](http://go.microsoft.com/fwlink/?LinkID=239655&clcid=0x409)
- * [64bits package for SQL Server 2012](http://go.microsoft.com/fwlink/?LinkID=239656&clcid=0x409)
+	* [32bits package for SQL Server 2012](http://go.microsoft.com/fwlink/?LinkID=239655&clcid=0x409)
+	* [64bits package for SQL Server 2012](http://go.microsoft.com/fwlink/?LinkID=239656&clcid=0x409)
 * [SQL Server PowerShell Extensions](http://sqlpsx.codeplex.com/)
 
 Installation
@@ -26,10 +37,12 @@ Installation
 
 Simply copy the content of the Nitrate repo somewhere, for example:
 
+	:::powershell
     git clone git@bitbucket.org:Ventajou/nitrate.git
 
 To make your life easier, I strongly recommend creating an alias to Nitrate in your PowerShell profile. To do that, create or edit **Microsoft.PowerShell_profile.ps1** in your Windows Documents folder and add the following line:
 
+	:::powershell
 	New-Alias no3 <path to nitrate>\nitrate.ps1
 
 Quick Start
@@ -56,9 +69,9 @@ One goal of Nitrate is to separate your code from Orchard's so that you don't ne
 
 * **orchard**: the Orchard source code, make sure your source control client ignores that folder.
 * **source**: should contain your source code.
- * **modules**: contains your modules. Each folder in there is symlinked to the Orchard modules folder by the **setup** command.
- * **modules**: contains your themes. Each folder in there is symlinked to the Orchard themes folder by the **setup** command.
- * **media**: this folder is symlinked to the Orchard media folder by the **setup** command.
+	* **modules**: contains your modules. Each folder in there is symlinked to the Orchard modules folder by the **setup** command.
+	* **modules**: contains your themes. Each folder in there is symlinked to the Orchard themes folder by the **setup** command.
+	* **media**: this folder is symlinked to the Orchard media folder by the **setup** command.
 * **db**: contains your database backup
 
 If you wish to create a separate solution for your themes and modules, I recommend saving the .sln file under the source folder. Also when you use the create-module command, you will need to adjust the location of the referenced Orchard assemblies.   
