@@ -92,11 +92,13 @@ function Clean
 {
 	CON_WriteInfo "Cleaning up the site..." $true
 
+	. iisreset
 	IIS_RemoveApplication $DAT_websiteName $DAT_virtualDirectoryName
 	FS_UnlinkFolders "$rootPath\source\themes" "$rootPath\orchard\src\orchard.web\themes"
 	FS_UnlinkFolders "$rootPath\source\modules" "$rootPath\orchard\src\orchard.web\modules"
 	FS_UnlinkFolder "$rootPath\orchard\src\orchard.web\Media"
-	FS_EmptyDir "$rootPath\orchard"
+	FS_UnlinkFile "$rootPath\orchard\src\Orchard.sln"
+	FS_RemoveDir "$rootPath\orchard"
 	SQL_DeleteDb $DAT_SqlServer $DAT_SqlInstance $DAT_SqlDatabase
 	SQL_DeleteDbUser $DAT_SqlServer $DAT_SqlInstance $DAT_SqlUser
 
@@ -119,6 +121,15 @@ function Setup
 	. msbuild "$rootPath\orchard\src\orchard.sln"
 	CON_WriteDone
 
+	if (-not(Test-Path "$rootPath\source\Orchard.sln")) {
+		mv "$rootPath\orchard\src\Orchard.sln" "$rootPath\source\Orchard.sln"
+	}
+	else {
+		del "$rootPath\orchard\src\Orchard.sln"
+	}
+	
+	FS_LinkFile "$rootPath\source\Orchard.sln" "$rootPath\orchard\src\Orchard.sln"
+	
 	FS_LinkFolders "$rootPath\source\themes" "$rootPath\orchard\src\orchard.web\themes"
 	FS_LinkFolders "$rootPath\source\modules" "$rootPath\orchard\src\orchard.web\modules"
 	Remove-Item "$rootPath\orchard\src\orchard.web\Media" -Force -Recurse
@@ -181,6 +192,7 @@ function RestoreDb
 
 		if (Test-Path $backupPath)
 		{
+			. iisreset
 			SQL_DeleteDb $DAT_SqlServer $DAT_SqlInstance $DAT_SqlDatabase
 			SQL_RestoreDb $DAT_SqlServer $DAT_SqlInstance $DAT_SqlDatabase $backupPath $DAT_SqlUser $resetPasswordFile
 			Remove-Item $backupPath
@@ -208,7 +220,7 @@ function CreateModule($name)
 	Push-Location
 	CON_WriteInfo "Generating module with Orchard... " $true
 	cd "$rootPath\orchard\src\orchard.web\bin\"
-	. ".\orchard.exe" codegen module $name
+	. ".\orchard.exe" codegen module $name /CreateProject:true /IncludeInSolution:true
 	Pop-Location
 	CON_WriteDone
 	CON_WriteInfo "Moving files to source folder... "
@@ -226,7 +238,7 @@ function CreateTheme($name)
 	Push-Location
 	CON_WriteInfo "Generating theme with Orchard... " $true
 	cd "$rootPath\orchard\src\orchard.web\bin\"
-	. ".\orchard.exe" codegen theme $name
+	. ".\orchard.exe" codegen theme $name /CreateProject:true /IncludeInSolution:true
 	Pop-Location
 	CON_WriteDone
 	CON_WriteInfo "Moving files to source folder... "
