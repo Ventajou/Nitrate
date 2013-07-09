@@ -6,6 +6,8 @@ $ErrorActionPreference='Stop'
 # Initialize root paths
 $scriptPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 
+Import-Module -Force -Name "$scriptPath\Console"
+
 $rootPath = ""
 Push-Location
 do
@@ -51,7 +53,6 @@ elseif ($rootPath -eq "")
 }
 
 # load all additional modules, -Force ensures they get reloaded in case they get changed
-Import-Module -Force -Name "$scriptPath\Console"
 Import-Module -Force -Name "$scriptPath\FileSystem"
 Import-Module -Force -Name "$scriptPath\Net"
 Import-Module -Force -Name "$scriptPath\IIS"
