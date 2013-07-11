@@ -30,3 +30,4 @@ $DAT_FtpRoot = ""
 #########################################
 # Name of the Orchard code branch to use
 $DAT_CodeBranch = "1.x"
+$DAT_CodeTag	= "tip"

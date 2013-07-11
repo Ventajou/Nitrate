@@ -94,5 +94,9 @@ function FS_CombinePath($left, $right)
 	$combined
 }
 
+function FS_GetFolderNames($source)
+{
+	Get-Item "$source\*" | Where {$_.psIsContainer -eq $true } | Select-Object -ExpandProperty Name
+}
 
-Export-ModuleMember FS_LinkFolders, FS_LinkFolder, FS_LinkFile, FS_UnlinkFolders, FS_UnlinkFolder, FS_UnlinkFile, FS_EmptyDir, FS_CombinePath, FS_EnsureDir, FS_RemoveDir
+Export-ModuleMember FS_LinkFolders, FS_LinkFolder, FS_LinkFile, FS_UnlinkFolders, FS_UnlinkFolder, FS_UnlinkFile, FS_EmptyDir, FS_CombinePath, FS_EnsureDir, FS_RemoveDir, FS_GetFolderNames

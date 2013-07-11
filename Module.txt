@@ -1,0 +1,9 @@
+﻿Name: Nitrate
+AntiForgery: enabled
+Author: André Rieussec
+Website: https://bitbucket.org/Ventajou/nitrate
+Version: 1.0
+OrchardVersion: 1.6
+Description: Placeholder module to store Nitrate's recipe.
+FeatureDescription: Placeholder module to store Nitrate's recipe.
+Category: Utilities
