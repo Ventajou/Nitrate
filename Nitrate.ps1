@@ -394,6 +394,7 @@ switch ($args[0])
 		Write-Host " - create-module: creates a new module, adds it to Orchard and the source folder."
 		Write-Host " - create-theme:  creates a new theme, adds it to Orchard and the source folder."
 		Write-Host " - shell:         runs the Orchard command line."
+		Write-Host " - build-recipe:  creates a recipe file that contains the list of modules and themes downloaded from the gallery."
 		Write-Host
 	}
 }
