@@ -84,6 +84,24 @@ function UnZip($source, $destination)
 	CON_WriteDone
 }
 
+# Removes all of the symlinks
+function CleanLinks
+{
+	FS_UnlinkFolders "$rootPath\source\themes" "$rootPath\orchard\src\orchard.web\themes"
+	FS_UnlinkFolders "$rootPath\source\modules" "$rootPath\orchard\src\orchard.web\modules"
+	FS_UnlinkFolder "$rootPath\orchard\src\orchard.web\Media"
+	FS_UnlinkFile "$rootPath\orchard\src\Orchard.sln"
+}
+
+# Creates all of the symlinks
+function CreateLinks
+{
+	FS_LinkFile "$rootPath\source\Orchard.sln" "$rootPath\orchard\src\Orchard.sln"
+	FS_LinkFolders "$rootPath\source\themes" "$rootPath\orchard\src\orchard.web\themes"
+	FS_LinkFolders "$rootPath\source\modules" "$rootPath\orchard\src\orchard.web\modules"
+	FS_LinkFolder "$rootPath\source\media\" "$rootPath\orchard\src\orchard.web\Media"
+}
+
 ###########################################################################################################
 #
 #  cleans existing environment
@@ -94,10 +112,7 @@ function Clean
 
 	. iisreset
 	IIS_RemoveApplication $DAT_websiteName $DAT_virtualDirectoryName
-	FS_UnlinkFolders "$rootPath\source\themes" "$rootPath\orchard\src\orchard.web\themes"
-	FS_UnlinkFolders "$rootPath\source\modules" "$rootPath\orchard\src\orchard.web\modules"
-	FS_UnlinkFolder "$rootPath\orchard\src\orchard.web\Media"
-	FS_UnlinkFile "$rootPath\orchard\src\Orchard.sln"
+	CleanLinks
 	FS_RemoveDir "$rootPath\orchard"
 	SQL_DeleteDb $DAT_SqlServer $DAT_SqlInstance $DAT_SqlDatabase
 	SQL_DeleteDbUser $DAT_SqlServer $DAT_SqlInstance $DAT_SqlUser
@@ -128,12 +143,10 @@ function Setup
 		del "$rootPath\orchard\src\Orchard.sln"
 	}
 	
-	FS_LinkFile "$rootPath\source\Orchard.sln" "$rootPath\orchard\src\Orchard.sln"
-	
-	FS_LinkFolders "$rootPath\source\themes" "$rootPath\orchard\src\orchard.web\themes"
-	FS_LinkFolders "$rootPath\source\modules" "$rootPath\orchard\src\orchard.web\modules"
 	Remove-Item "$rootPath\orchard\src\orchard.web\Media" -Force -Recurse
-	FS_LinkFolder "$rootPath\source\media\" "$rootPath\orchard\src\orchard.web\Media"
+
+	CreateLinks
+	
 	SQL_CreateDb $DAT_SqlServer $DAT_SqlInstance $DAT_SqlDatabase
 	SQL_CreateDbUser $DAT_SqlServer $DAT_SqlInstance $DAT_SqlDatabase $DAT_SqlUser $DAT_SqlPassword
 
@@ -328,6 +341,18 @@ function BuildRecipe
 
 ###########################################################################################################
 #
+# removes and restores all the symlinks to your source folders and files.
+#
+function RebuildLinks
+{
+	CON_WriteInfo "Recreating all symlinks... " $true
+	CleanLinks
+	CreateLinks
+	CON_WriteDone
+}
+
+###########################################################################################################
+#
 #  Main
 #
 switch ($args[0])
@@ -381,6 +406,9 @@ switch ($args[0])
 	"build-recipe" {
 		BuildRecipe
 	}
+	"rebuild-links" {
+		RebuildLinks
+	}
 	default {
 		Write-Host
 		Write-Host "Usage: Nitrate.ps1 <command>"
@@ -395,6 +423,7 @@ switch ($args[0])
 		Write-Host " - create-theme:  creates a new theme, adds it to Orchard and the source folder."
 		Write-Host " - shell:         runs the Orchard command line."
 		Write-Host " - build-recipe:  creates a recipe file that contains the list of modules and themes downloaded from the gallery."
+		Write-Host " - rebuild-links: removes and restores all the symlinks to your source folders and files."
 		Write-Host
 	}
 }

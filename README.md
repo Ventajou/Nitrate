@@ -10,7 +10,8 @@ Features
 * Easily build and keep a consistent environment across a team.
 * Automatically configure IIS and SQL Server.
 * Easy database backup and restore (useful to test migrations or 3rd party modules).
-* Git style commands work from anywhere in your environment path.
+* Git style commands work from anywhere in your repository path.
+* Only adds one small configuration file to your repository. 
 * Synchronize your site with FTP (experimental)
 * Anything you contribute!
 
@@ -60,7 +61,9 @@ Once you're ready to set up Orchard, type:
 
 	no3 setup
 
-It will take a little while because the Orchard source code is downloaded and compiled. But once done, you'll have an Orchard environment ready for setup.
+It will take a little while because the Orchard source code is downloaded and compiled. But once done, you'll have an Orchard environment ready for customization.
+
+For development, keep using the normal Orchard solution file in Visual Studio: `.\Orchard\src\Orchard.sln` that's actually a symbolic link to the real file which has been copied under your source folder by Nitrate during the initial setup. To create modules and themes, use the Nitrate commands `create-modules` and `create-theme`, they call the corresponding Orchard codegen commands but they also move the files into your source folder and automatically create symlinks.
 
 File Organization
 ---
@@ -73,8 +76,6 @@ One goal of Nitrate is to separate your code from Orchard's so that you don't ne
 	* **modules**: contains your themes. Each folder in there is symlinked to the Orchard themes folder by the **setup** command.
 	* **media**: this folder is symlinked to the Orchard media folder by the **setup** command.
 * **db**: contains your database backup
-
-If you wish to create a separate solution for your themes and modules, I recommend saving the .sln file under the source folder. Also when you use the create-module command, you will need to adjust the location of the referenced Orchard assemblies.   
 
 Command Reference
 ---
@@ -89,6 +90,7 @@ Command Reference
 * **create-theme**: creates a new theme, adds it to Orchard and the source folder.
 * **shell**: runs the Orchard command line.
 * **build-recipe**: creates a recipe file that contains the list of modules and themes downloaded from the gallery.
+* **rebuild-links**: removes and restores all the symlinks to your source folders and files.
 
 License
 ---
