@@ -6,12 +6,12 @@
 
 Import-Module webadministration
 
-function IIS_CreateApplication($site, $name, $path)
+function IIS_CreateApplication($site, $name, $path, $appPool)
 {
 	CON_WriteInfo "Creating $site\$name... " $true
 	$webAppPath = "IIS:\Sites\$site\$name"
 	New-Item $webAppPath -physicalPath "$path" -type Application
-	Set-ItemProperty $webAppPath -name applicationPool -value '.NET v4.5'
+	Set-ItemProperty $webAppPath -name applicationPool -value $appPool
 	CON_WriteDone
 }
 
