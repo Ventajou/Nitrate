@@ -236,7 +236,7 @@ function CreateModule($name)
 	Push-Location
 	CON_WriteInfo "Generating module with Orchard... " $true
 	cd "$rootPath\orchard\src\orchard.web\bin\"
-	. ".\orchard.exe" codegen module $name /CreateProject:true /IncludeInSolution:true
+	. ".\orchard.exe" codegen module $name /IncludeInSolution:true
 	Pop-Location
 	CON_WriteDone
 	CON_WriteInfo "Moving files to source folder... "
