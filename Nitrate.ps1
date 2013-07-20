@@ -165,7 +165,7 @@ function Setup
 
 	RestoreDb
 
-	IIS_CreateApplication $DAT_websiteName $DAT_virtualDirectoryName "$rootPath\orchard\src\orchard.web"
+	IIS_CreateApplication $DAT_websiteName $DAT_virtualDirectoryName "$rootPath\orchard\src\orchard.web" $DAT_appPoolName
 
 	CON_WriteGood "Your development environment is ready!"
 	Write-Host "User name : $DAT_OrchardAdminUser"

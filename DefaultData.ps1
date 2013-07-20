@@ -6,6 +6,7 @@
 # IIS Settings
 $DAT_websiteName = "Default Web Site"
 $DAT_virtualDirectoryName = "Orchard"
+$DAT_appPoolName = ".Net v4.5"
 
 ###################
 # Orchard Settings
