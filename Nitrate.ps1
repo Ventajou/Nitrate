@@ -61,6 +61,10 @@ Import-Module -Force -Name "$scriptPath\SQL"
 # load the default and custom data
 . "$scriptPath\DefaultData.ps1"
 . "$rootPath\NitrateConfig.ps1"
+if (Test-Path "$rootPath\NitrateLocal.ps1")
+{
+	. "$rootPath\NitrateLocal.ps1"
+}
 
 # initialize some values
 $backupPath = "$rootPath\db\$DAT_SqlFileName.bak"
@@ -223,7 +227,7 @@ function RestoreDb
 function FtpSync
 {
 	CON_WriteInfo "Synchronizing site... "
-	. "$scriptPath\tools\winscp.exe" /console /script="$scriptPath\winscp.txt" /parameter "$DAT_FtpUrl" "$rootPath\orchard\src\orchard.web" "$DAT_FtpRoot" "$rootPath\orchard\src\orchard.web\app_data\Sites\Default\Settings.txt"
+	. "$scriptPath\tools\winscp.exe" /console /script="$scriptPath\winscp.txt" /parameter "$DAT_FtpUrl" "$rootPath\orchard\build\precompiled" "$DAT_FtpRoot" "$rootPath\orchard\src\orchard.web\app_data\Sites\Default\Settings.txt"
 	CON_WriteDone
 }
 
