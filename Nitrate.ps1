@@ -93,14 +93,18 @@ function CleanLinks
 {
 	FS_UnlinkFolders "$rootPath\source\themes" "$rootPath\orchard\src\orchard.web\themes"
 	FS_UnlinkFolders "$rootPath\source\modules" "$rootPath\orchard\src\orchard.web\modules"
-	FS_UnlinkFolder "$rootPath\orchard\src\orchard.web\Media"
-	FS_UnlinkFile "$rootPath\orchard\src\Orchard.sln"
+	FS_UnlinkFolder "$rootPath\orchard\src\orchard.web\Media"	
+	if ($DAT_CopySolution -eq $true) {
+		FS_UnlinkFile "$rootPath\orchard\src\Orchard.sln"
+	}
 }
 
 # Creates all of the symlinks
 function CreateLinks
 {
-	FS_LinkFile "$rootPath\source\Orchard.sln" "$rootPath\orchard\src\Orchard.sln"
+	if ($DAT_CopySolution -eq $true) {
+		FS_LinkFile "$rootPath\source\Orchard.sln" "$rootPath\orchard\src\Orchard.sln"
+	}
 	FS_LinkFolders "$rootPath\source\themes" "$rootPath\orchard\src\orchard.web\themes"
 	FS_LinkFolders "$rootPath\source\modules" "$rootPath\orchard\src\orchard.web\modules"
 	FS_LinkFolder "$rootPath\source\media\" "$rootPath\orchard\src\orchard.web\Media"
@@ -114,8 +118,18 @@ function Clean
 {
 	CON_WriteInfo "Cleaning up the site..." $true
 
-	. iisreset
-	IIS_RemoveApplication $DAT_websiteName $DAT_virtualDirectoryName
+	if ($DAT_useIIS -eq $true)
+	{
+		. iisreset
+		if (-not($DAT_webAppName -eq ""))
+		{		
+			IIS_RemoveApplication $DAT_websiteName $DAT_webAppName
+		}
+		elseif ($DAT_canDeleteWebside)
+		{
+			IIS_RemoveSite $DAT_websiteName
+		}
+	}
 	CleanLinks
 	FS_RemoveDir "$rootPath\orchard"
 	SQL_DeleteDb $DAT_SqlServer $DAT_SqlInstance $DAT_SqlDatabase
@@ -140,11 +154,13 @@ function Setup
 	. msbuild "$rootPath\orchard\src\orchard.sln"
 	CON_WriteDone
 
-	if (-not(Test-Path "$rootPath\source\Orchard.sln")) {
-		mv "$rootPath\orchard\src\Orchard.sln" "$rootPath\source\Orchard.sln"
-	}
-	else {
-		del "$rootPath\orchard\src\Orchard.sln"
+	if ($DAT_CopySolution -eq $true) {
+		if (-not(Test-Path "$rootPath\source\Orchard.sln")) {
+			mv "$rootPath\orchard\src\Orchard.sln" "$rootPath\source\Orchard.sln"
+		}
+		else {
+			del "$rootPath\orchard\src\Orchard.sln"
+		}
 	}
 	
 	Remove-Item "$rootPath\orchard\src\orchard.web\Media" -Force -Recurse
@@ -169,8 +185,18 @@ function Setup
 
 	RestoreDb
 
-	IIS_CreateApplication $DAT_websiteName $DAT_virtualDirectoryName "$rootPath\orchard\src\orchard.web" $DAT_appPoolName
-
+	if ($DAT_useIIS -eq $true)
+	{
+		if ($DAT_webAppName -eq "")
+		{
+			IIS_CreateSite $DAT_websiteName $DAT_protocol $DAT_bindingInfo "$rootPath\orchard\src\orchard.web" $DAT_appPoolName
+		}
+		else
+		{
+			IIS_CreateApplication $DAT_websiteName $DAT_webAppName "$rootPath\orchard\src\orchard.web" $DAT_appPoolName
+		}
+	}
+	
 	CON_WriteGood "Your development environment is ready!"
 	Write-Host "User name : $DAT_OrchardAdminUser"
 	Write-Host "Password  : $DAT_OrchardAdminPassword"

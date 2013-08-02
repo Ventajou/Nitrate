@@ -63,7 +63,12 @@ Once you're ready to set up Orchard, type:
 
 It will take a little while because the Orchard source code is downloaded and compiled. But once done, you'll have an Orchard environment ready for customization.
 
-For development, keep using the normal Orchard solution file in Visual Studio: `.\Orchard\src\Orchard.sln` that's actually a symbolic link to the real file which has been copied under your source folder by Nitrate during the initial setup. To create modules and themes, use the Nitrate commands `create-modules` and `create-theme`, they call the corresponding Orchard codegen commands but they also move the files into your source folder and automatically create symlinks.
+Using Visual Studio
+---
+
+If you set the `$DAT_CopySolution` setting to `$true` in your configuration file, Nitrate will move the Orchard solution file to the Source directory and create a symbolic link to it from `.\Orchard\src\Orchard.sln`. To create modules and themes, use the Nitrate commands `create-modules` and `create-theme`, they call the corresponding Orchard codegen commands but they also move the files into your source folder and automatically create symlinks. The main issue with this method is you will have some manual tweaking to do if you want to update Orchard later.
+
+The default setting does not perform that copy, the idea being that you may want to create your own solution file and just add the Orchard core solution inside a solution folder by using Visual Studio's _add existing project_ feature. It will be easier to upgrade Orchard, but you will have to manually add the new projects you create from the command line. 
 
 File Organization
 ---
@@ -76,6 +81,16 @@ One goal of Nitrate is to separate your code from Orchard's so that you don't ne
 	* **modules**: contains your themes. Each folder in there is symlinked to the Orchard themes folder by the **setup** command.
 	* **media**: this folder is symlinked to the Orchard media folder by the **setup** command.
 * **db**: contains your database backup
+
+Source Control
+---
+
+Make sure you do not commit the Orchard folder to source control. If you use Git, add it to the .gitignore file.
+
+Team Environment
+---
+
+When working in a team, developers may want to have a slightly different setup from each other. Nitrate supports a local configuration file: `NitrateLocal.ps1`, when placed alongside `NitrateConfig.ps1` it will be automatically loaded and override the project settings. The idea being to only commit `NitrateConfig.ps1` to source control as a baseline configuration.
 
 Command Reference
 ---
