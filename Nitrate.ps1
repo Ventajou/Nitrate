@@ -120,7 +120,7 @@ function Clean
 
 	if ($DAT_useIIS -eq $true)
 	{
-		. iisreset
+		. touch "$rootPath\orchard\src\orchard.web\web.config"
 		if (-not($DAT_webAppName -eq ""))
 		{		
 			IIS_RemoveApplication $DAT_websiteName $DAT_webAppName
@@ -238,7 +238,7 @@ function RestoreDb
 
 		if (Test-Path $backupPath)
 		{
-			. iisreset
+			. touch "$rootPath\orchard\src\orchard.web\web.config"
 			SQL_DeleteDb $DAT_SqlServer $DAT_SqlInstance $DAT_SqlDatabase
 			SQL_RestoreDb $DAT_SqlServer $DAT_SqlInstance $DAT_SqlDatabase $backupPath $DAT_SqlUser $resetPasswordFile
 			Remove-Item $backupPath
