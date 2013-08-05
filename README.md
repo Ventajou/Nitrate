@@ -78,7 +78,7 @@ One goal of Nitrate is to separate your code from Orchard's so that you don't ne
 * **orchard**: the Orchard source code, make sure your source control client ignores that folder.
 * **source**: should contain your source code.
 	* **modules**: contains your modules. Each folder in there is symlinked to the Orchard modules folder by the **setup** command.
-	* **modules**: contains your themes. Each folder in there is symlinked to the Orchard themes folder by the **setup** command.
+	* **themes**: contains your themes. Each folder in there is symlinked to the Orchard themes folder by the **setup** command.
 	* **media**: this folder is symlinked to the Orchard media folder by the **setup** command.
 * **db**: contains your database backup
 
