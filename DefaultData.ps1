@@ -40,5 +40,4 @@ $DAT_FtpRoot 				= ""
 
 #########################################
 # Name of the Orchard code branch to use
-$DAT_CodeBranch 			= "default"  	# this is the branch on Codeplex, at the moment it should probably remain at 1.x for everyone, unless you use an old version of Orchard
-$DAT_CodeTag				= "1.7"  		# this is the tag or commit hash, if you work with 1.6, then put "1.6" there, I didn't see a 1.6.1 tag
+$DAT_CodeBranch 			= "master"  	# this is the branch on Codeplex

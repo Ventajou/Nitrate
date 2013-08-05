@@ -147,7 +147,8 @@ function Setup
 	Clean
 
 	CON_WriteInfo "Retrieving Orchard source for branch $DAT_CodeBranch" $true
-	. hg clone https://hg.codeplex.com/orchard "$rootPath\orchard" -b $DAT_CodeBranch -r $DAT_CodeTag
+	. git clone -b $DAT_CodeBranch --single-branch https://git01.codeplex.com/orchard "$rootPath\orchard"
+	#. hg clone https://hg.codeplex.com/orchard "$rootPath\orchard" -b $DAT_CodeBranch -r $DAT_CodeTag
 	CON_WriteDone
 	
 	CON_WriteInfo "Building Orchard" $true
@@ -338,19 +339,19 @@ function BuildRecipe
 	$modules = FS_GetFolderNames "$rootPath\source\modules"
 	$themes = FS_GetFolderNames "$rootPath\source\themes"
 
-	$modulesRegex = '(?m)^.*?\\Modules\\(.*?)\\Module.txt'
-	$themesRegex = '(?m)^.*?\\Themes\\(.*?)\\Theme.txt'
+	$modulesRegex = '(?m)^.*?/Modules/(.*?)/Module.txt'
+	$themesRegex = '(?m)^.*?/Themes/(.*?)/Theme.txt'
 	
 	Push-Location
 	
 	cd "$rootPath\orchard"
-	$untracked = (hg status -u | Out-String)
+	$untracked = (git status -u --porcelain | Out-String)
 
 	$m = ($untracked | Select-String -AllMatches $modulesRegex)
 	foreach($match in $m.Matches) {
 		$moduleName = $match.Groups[1].Value
 		if ($modules -notcontains $moduleName) {
-			$stream.WriteLine("<Module packageId=""Orchard.Module.$moduleName"" />")
+			$stream.WriteLine("  <Module packageId=""Orchard.Module.$moduleName"" />")
 		}
 	}
 
@@ -358,7 +359,7 @@ function BuildRecipe
 	foreach($match in $m.Matches) {
 		$themeName = $match.Groups[1].Value
 		if ($themes -notcontains $themeName) {
-			$stream.WriteLine("<Theme packageId=""Orchard.Theme.$themeName"" />")
+			$stream.WriteLine("  <Theme packageId=""Orchard.Theme.$themeName"" />")
 		}
 	}
 
