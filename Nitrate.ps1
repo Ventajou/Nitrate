@@ -67,8 +67,6 @@ if (Test-Path "$rootPath\NitrateLocal.ps1")
 }
 
 # initialize some values
-$backupPath = "$rootPath\db\$DAT_SqlFileName.bak"
-$backupArchive = "$rootPath\db\$DAT_SqlFileName.zip"
 $resetPasswordFile = "$scriptPath\ResetAdmin.sql"
 
 # Ensure source folders exist
@@ -207,8 +205,16 @@ function Setup
 #
 #  backs up the site's database
 #
-function BackupDb
+function BackupDb($fileName)
 {
+	if (!$fileName)
+	{
+		$fileName = $DAT_SqlFileName
+	}
+
+	$backupPath = "$rootPath\db\$fileName.bak"
+	$backupArchive = "$rootPath\db\$fileName.zip"
+
 	if (Test-Path $backupPath)
 	{
 		Remove-Item $backupPath
@@ -223,7 +229,7 @@ function BackupDb
 
 	Push-Location
 	cd "$rootPath\db"
-	. "$scriptPath\Tools\zip.exe" -9 -m "$DAT_SqlFileName.zip" "$DAT_SqlFileName.bak"
+	. "$scriptPath\Tools\zip.exe" -9 -m "$fileName.zip" "$fileName.bak"
 	Pop-Location
 }
 
@@ -231,8 +237,16 @@ function BackupDb
 #
 #  restores the site's database
 #
-function RestoreDb
+function RestoreDb($fileName)
 {
+	if (!$fileName)
+	{
+		$fileName = $DAT_SqlFileName
+	}
+
+	$backupPath = "$rootPath\db\$fileName.bak"
+	$backupArchive = "$rootPath\db\$fileName.zip"
+
 	if (Test-Path $backupArchive)
 	{
 		UnZip $backupArchive "$rootPath\db\"
@@ -395,10 +409,10 @@ switch ($args[0])
 		Setup
 	}
 	"backup-db" {
-		BackupDb
+		BackupDb $args[1]
 	}
 	"load-db" {
-		RestoreDb
+		RestoreDb $args[1]
 	}
 	"ftp-sync" {
 		FtpSync
