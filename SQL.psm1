@@ -1,5 +1,5 @@
 ﻿Push-Location
-Import-Module SQLPS 3>$null
+Import-Module SQLPS -DisableNameChecking
 import-module sqlserver -force
 Pop-Location
 

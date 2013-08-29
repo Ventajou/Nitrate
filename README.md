@@ -21,7 +21,7 @@ Requirements
 * .NET Framework 4.5
 * IIS with ASP.NET support
 * Mercurial client
-* PowerShell
+* PowerShell 3.0 (2.0 reported to work but not officially supported)
 * Visual Studio 2010 or 2012
 * A Microsoft SQL Server instance accessible
 	* Use Mixed Mode Authentication
