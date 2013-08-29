@@ -312,11 +312,11 @@ function CreateTheme($name)
 #
 #  Shell
 #
-function Shell
+function Shell($p1, $p2, $p3, $p4, $p5, $p6, $p7, $p8, $p9)
 {
 	Push-Location
 	cd "$rootPath\orchard\src\orchard.web\bin\"
-	. ".\orchard.exe"
+	. ".\orchard.exe" $p1 $p2 $p3 $p4 $p5 $p6 $p7 $p8 $p9
 	Pop-Location
 }
 
@@ -446,7 +446,7 @@ switch ($args[0])
 		}
 	}
 	"shell" {
-		Shell
+		Shell $args[1] $args[2] $args[3] $args[4] $args[5] $args[6] $args[7] $args[8] $args[9]
 	}
 	"build-recipe" {
 		BuildRecipe

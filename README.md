@@ -103,7 +103,7 @@ Command Reference
 * **ftp-sync**: synchronizes the orchard site on an ftp server.
 * **create-module**: creates a new module, adds it to Orchard and the source folder.
 * **create-theme**: creates a new theme, adds it to Orchard and the source folder.
-* **shell**: runs the Orchard command line.
+* **shell**: runs the Orchard command line, with optional parameters.
 * **build-recipe**: creates a recipe file that contains the list of modules and themes downloaded from the gallery.
 * **rebuild-links**: removes and restores all the symlinks to your source folders and files.
 
