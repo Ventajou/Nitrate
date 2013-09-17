@@ -31,7 +31,6 @@ Requirements
 * The SQL Server provider for PowerShell:
 	* [32bits package for SQL Server 2012](http://go.microsoft.com/fwlink/?LinkID=239655&clcid=0x409)
 	* [64bits package for SQL Server 2012](http://go.microsoft.com/fwlink/?LinkID=239656&clcid=0x409)
-* [SQL Server PowerShell Extensions](http://sqlpsx.codeplex.com/)
 
 Installation
 ---
