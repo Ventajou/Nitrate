@@ -1,4 +1,4 @@
-Nitrate - Grow your Orchard
+Nitrate - Grow your Orchard faster
 ===
 
 Nitrate is a set of scripts aimed at making your life easier when developing with the Orchard CMS.
@@ -18,9 +18,11 @@ Features
 Requirements
 ---
 
+Nitrate helps grow your Orchard but it's also a pollutant, andit requires a number of applications and tools which you may not yet have installed.
+
 * .NET Framework 4.5
 * IIS with ASP.NET support
-* Mercurial client
+* Git command line client (to retrieve Orchard and also for some tools it includes)
 * PowerShell 3.0 (2.0 reported to work but not officially supported)
 * Visual Studio 2010 or 2012
 * A Microsoft SQL Server instance accessible
@@ -105,6 +107,7 @@ Command Reference
 * **shell**: runs the Orchard command line, with optional parameters.
 * **build-recipe**: creates a recipe file that contains the list of modules and themes downloaded from the gallery.
 * **rebuild-links**: removes and restores all the symlinks to your source folders and files.
+* **log**: tails the log file.
 
 License
 ---

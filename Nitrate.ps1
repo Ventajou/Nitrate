@@ -398,6 +398,19 @@ function RebuildLinks
 
 ###########################################################################################################
 #
+# tails the log file.
+#
+function TailLog
+{
+	$date = Get-Date -format yyyy.MM.dd
+	CON_WriteInfo "Watching logfile: orchard-error-$date.log" $true
+	CON_WriteInfo "Press Ctrl+C to stop" $true
+	Write-Host
+	. "tail" -f "$rootPath\orchard\src\orchard.web\app_data\logs\orchard-error-$date.log"
+}
+
+###########################################################################################################
+#
 #  Main
 #
 switch ($args[0])
@@ -454,6 +467,9 @@ switch ($args[0])
 	"rebuild-links" {
 		RebuildLinks
 	}
+	"log" {
+		TailLog
+	}
 	default {
 		Write-Host
 		Write-Host "Usage: Nitrate.ps1 <command>"
@@ -469,6 +485,7 @@ switch ($args[0])
 		Write-Host " - shell:         runs the Orchard command line."
 		Write-Host " - build-recipe:  creates a recipe file that contains the list of modules and themes downloaded from the gallery."
 		Write-Host " - rebuild-links: removes and restores all the symlinks to your source folders and files."
+		Write-Host " - log:			  tails the log file."
 		Write-Host
 	}
 }
