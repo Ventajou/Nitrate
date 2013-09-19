@@ -411,6 +411,18 @@ function TailLog
 
 ###########################################################################################################
 #
+#  Deletes the mappings.bin file
+#
+function KillMappings
+{
+	CON_WriteInfo "Removing mappings.bin... " $true
+	. touch "$rootPath\orchard\src\orchard.web\web.config"
+	Remove-Item -Path "$rootPath\orchard\src\orchard.web\app_data\Sites\Default\mappings.bin"
+	CON_WriteDone
+}
+
+###########################################################################################################
+#
 #  Main
 #
 switch ($args[0])
@@ -470,6 +482,9 @@ switch ($args[0])
 	"log" {
 		TailLog
 	}
+	"kill-mappings" {
+		KillMappings
+	}
 	default {
 		Write-Host
 		Write-Host "Usage: Nitrate.ps1 <command>"
@@ -486,6 +501,7 @@ switch ($args[0])
 		Write-Host " - build-recipe:  creates a recipe file that contains the list of modules and themes downloaded from the gallery."
 		Write-Host " - rebuild-links: removes and restores all the symlinks to your source folders and files."
 		Write-Host " - log:			  tails the log file."
+		Write-Host " - kill-mappings: deletes the mappings.bin file."
 		Write-Host
 	}
 }

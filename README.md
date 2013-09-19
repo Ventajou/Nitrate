@@ -108,6 +108,7 @@ Command Reference
 * **build-recipe**: creates a recipe file that contains the list of modules and themes downloaded from the gallery.
 * **rebuild-links**: removes and restores all the symlinks to your source folders and files.
 * **log**: tails the log file.
+* **kill-mappings**: deletes the mappings.bin file.
 
 License
 ---
