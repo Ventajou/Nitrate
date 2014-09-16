@@ -1,7 +1,0 @@
-#option batch abort
-#option confirm off
-# Connect
-open "%1%"
-# Synchronize paths provided via environment variables
-option exclude "%4%"
-synchronize remote "%2%" "%3%"
