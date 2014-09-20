@@ -6,10 +6,15 @@ public class ConfigData {
   {
     Name = "Nitrate project";
     Version = "0.0.0";
+    Orchard = new Dictionary<string, string>() {
+      { "Repo", "https://git01.codeplex.com/orchard" },
+      { "Branch", "master" }
+    };
   }
 
   public string Name { get; set; }
   public string Version { get; set; }
+  public Dictionary<string, string> Orchard { get; set; }
 }
 
 public class Config {
@@ -32,7 +37,7 @@ public class Config {
 
   public void Save()
   {
-    File.WriteAllText(_path, JsonConvert.SerializeObject(Data));
+    File.WriteAllText(_path, JsonConvert.SerializeObject(Data, Formatting.Indented));
   }
 
   public static Config Init()
@@ -48,6 +53,7 @@ public class Config {
     do {
       if (File.Exists(Path.Combine(path, ConfigName)))
       {
+        Con.Success("Found Nitrate project in: " + path);
         return new Config(path);
       }
 

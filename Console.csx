@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.IO;
+
 public class Con {
   public static void Error(string message)
   {
@@ -21,5 +24,22 @@ public class Con {
   public static void Lf()
   {
     Console.WriteLine();
+  }
+
+  public static string Run(string app, string command)
+  {
+  	var p = new Process();
+  	p.StartInfo = new ProcessStartInfo() {
+  		CreateNoWindow = true,
+  		UseShellExecute = false,
+  		RedirectStandardOutput = true,
+  		FileName = app,
+  		Arguments = command
+  	};
+  	p.Start();
+  	var output = p.StandardOutput.ReadToEnd();
+  	p.WaitForExit();
+  	p.Close();
+  	return output;
   }
 }
