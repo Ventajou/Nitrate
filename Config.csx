@@ -2,19 +2,9 @@ using Newtonsoft.Json;
 using System.IO;
 
 public class ConfigData {
-  public ConfigData()
-  {
-    Name = "Nitrate project";
-    Version = "0.0.0";
-    Orchard = new Dictionary<string, string>() {
-      { "Repo", "https://git01.codeplex.com/orchard" },
-      { "Branch", "master" }
-    };
-  }
-
   public string Name { get; set; }
   public string Version { get; set; }
-  public Dictionary<string, string> Orchard { get; set; }
+  public Dictionary<string, PluginSettings> Configuration { get; set; }
 }
 
 public class Config {
@@ -23,35 +13,46 @@ public class Config {
 
   private Config(string path)
   {
+    _singleton = this;
     _path = path;
+    var file = System.IO.Path.Combine(path, ConfigName);
 
-    if (File.Exists(path))
-      Data = JsonConvert.DeserializeObject<ConfigData>(File.ReadAllText(path));
-    else
-      Data = new ConfigData();
+    if (File.Exists(file)) {
+      Data = JsonConvert.DeserializeObject<ConfigData>(File.ReadAllText(file));
+      Plugins.Configure(Data.Configuration);
+    }
   }
 
+  private static Config _singleton;
   private string _path;
+  public string Path { get { return _path;} }
 
   public ConfigData Data { get; set; }
+
+  public static Config Current { get { return _singleton; }}
 
   public void Save()
   {
     File.WriteAllText(_path, JsonConvert.SerializeObject(Data, Formatting.Indented));
   }
 
-  public static Config Init()
+  public static Config Init(string path)
   {
-    return new Config(Path.Combine(Directory.GetCurrentDirectory(), ConfigName));
+    var config = new Config(System.IO.Path.Combine(path, ConfigName));
+    config.Data = new ConfigData() {
+      Name = "Orchard Project",
+      Version = "0.0.0",
+      Configuration = Plugins.GetDefaultSettings()
+    };
+    return config;
   }
 
-  public static Config Load()
+  public static Config Load(string path)
   {
-    var path = Directory.GetCurrentDirectory();
     DirectoryInfo info;
 
     do {
-      if (File.Exists(Path.Combine(path, ConfigName)))
+      if (File.Exists(System.IO.Path.Combine(path, ConfigName)))
       {
         Con.Success("Found Nitrate project in: " + path);
         return new Config(path);

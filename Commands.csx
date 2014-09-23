@@ -2,34 +2,6 @@
 #load "commands\clean.csx"
 #load "commands\orchard.csx"
 
-// void Run(string command, string options)
-// {
-//   switch(command)
-//   {
-//     "clean":
-//       break;
-//     "setup":
-//       break;
-//     "backup":
-//       break;
-//     "restore":
-//       break;
-//     "module":
-//       break;
-//     "theme":
-//       break;
-//     "recipe":
-//       break;
-//     "symlinks":
-//       break;
-//     "help":
-//       break;
-//     default:
-//       Con.Error("Uknown command: " + command);
-//       break;
-//   }
-// }
-
 public class Commands
 {
   private static List<BaseCommand> _commands = new List<BaseCommand>();

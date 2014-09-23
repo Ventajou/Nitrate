@@ -26,20 +26,38 @@ public class Con {
     Console.WriteLine();
   }
 
-  public static string Run(string app, string command)
+  public static string Run(string app, string command, bool redirectOutput = true, string workingDirectory = "")
   {
   	var p = new Process();
   	p.StartInfo = new ProcessStartInfo() {
   		CreateNoWindow = true,
   		UseShellExecute = false,
-  		RedirectStandardOutput = true,
+  		RedirectStandardOutput = redirectOutput,
   		FileName = app,
   		Arguments = command
   	};
+    if (!String.IsNullOrWhiteSpace(workingDirectory)) p.StartInfo.WorkingDirectory = workingDirectory;
   	p.Start();
-  	var output = p.StandardOutput.ReadToEnd();
+    string output = string.Empty;
+  	if (redirectOutput) output = p.StandardOutput.ReadToEnd();
   	p.WaitForExit();
   	p.Close();
   	return output;
+  }
+
+  public static bool IsAvailable(String fileName)
+  {
+      string path = Environment.GetEnvironmentVariable("path");
+      string[] folders = path.Split(';');
+
+      foreach (var folder in folders)
+      {
+          if (File.Exists(Path.Combine(folder, fileName)))
+          {
+              return true;
+          }
+      }
+
+      return false;
   }
 }

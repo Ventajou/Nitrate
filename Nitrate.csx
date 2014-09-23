@@ -1,6 +1,6 @@
 #load "console.csx"
 #load "config.csx"
-#load "commands.csx"
+#load "plugins.csx"
 
 using System.Linq;
 
@@ -8,9 +8,9 @@ Con.Lf();
 Con.Info("Nitrate - Grow your Orchard faster");
 Con.Lf();
 
-var config = Config.Load();
+var config = Config.Load(Env.ScriptArgs[0]);
 
-var command = (Env.ScriptArgs.Count() > 0) ? Env.ScriptArgs[0] : null;
+var command = (Env.ScriptArgs.Count() > 1) ? Env.ScriptArgs[1] : null;
 
 if (!String.IsNullOrWhiteSpace(command)) command = command.ToLower();
 
@@ -19,7 +19,7 @@ if (config == null)
   if (command == "init")
   {
     Con.Info("Initializing project...");
-    Config.Init().Save();
+    Config.Init(Env.ScriptArgs[0]).Save();
     Con.Success("Done!");
   }
   else
@@ -36,17 +36,9 @@ else
   if (command == "init")
     Con.Error("Init command not available: you are already in a Nitrate project.");
   else
-    Commands.Run(command, Env.ScriptArgs.Skip(1).ToArray());
+  {
+    Plugins.Run(command, Env.ScriptArgs.Skip(2).ToArray());
+  }
 }
 
 Con.Lf();
-
-/*
-
-  Modules:
-
-  - orchard
-  - IIS
-  - SQL Server
-
-*/
