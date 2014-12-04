@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nitrate", "Nitrate\Nitrate.csproj", "{2EBBD740-3801-41FC-AA12-93D3E21E1EAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Git", "Plugins\Git\Git.csproj", "{22EBAF2B-4D1A-4766-9B69-6802EEA9BF27}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{53C513E0-C838-47DC-B828-586B8E7ED740}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsBuild", "Plugins\MsBuild\MsBuild.csproj", "{983FC5E7-4720-4A0D-912F-423C26FFDC61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlServer", "Plugins\SqlServer\SqlServer.csproj", "{AF8A1445-BABA-4BB6-A6DB-0DC14E8DADE3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8617AEEB-4563-4993-84C9-9F37AB82B4BD}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2EBBD740-3801-41FC-AA12-93D3E21E1EAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EBBD740-3801-41FC-AA12-93D3E21E1EAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EBBD740-3801-41FC-AA12-93D3E21E1EAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EBBD740-3801-41FC-AA12-93D3E21E1EAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22EBAF2B-4D1A-4766-9B69-6802EEA9BF27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22EBAF2B-4D1A-4766-9B69-6802EEA9BF27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22EBAF2B-4D1A-4766-9B69-6802EEA9BF27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22EBAF2B-4D1A-4766-9B69-6802EEA9BF27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{983FC5E7-4720-4A0D-912F-423C26FFDC61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{983FC5E7-4720-4A0D-912F-423C26FFDC61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{983FC5E7-4720-4A0D-912F-423C26FFDC61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{983FC5E7-4720-4A0D-912F-423C26FFDC61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF8A1445-BABA-4BB6-A6DB-0DC14E8DADE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF8A1445-BABA-4BB6-A6DB-0DC14E8DADE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF8A1445-BABA-4BB6-A6DB-0DC14E8DADE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF8A1445-BABA-4BB6-A6DB-0DC14E8DADE3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{22EBAF2B-4D1A-4766-9B69-6802EEA9BF27} = {53C513E0-C838-47DC-B828-586B8E7ED740}
+		{983FC5E7-4720-4A0D-912F-423C26FFDC61} = {53C513E0-C838-47DC-B828-586B8E7ED740}
+		{AF8A1445-BABA-4BB6-A6DB-0DC14E8DADE3} = {53C513E0-C838-47DC-B828-586B8E7ED740}
+	EndGlobalSection
+EndGlobal
