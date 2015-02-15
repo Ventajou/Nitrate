@@ -9,25 +9,37 @@ using System.Text;
 
 namespace Nitrate
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// Finds and loads all of the plugins from the .\Plugins folder
+        /// </summary>
+        private static PluginManager LoadPlugins()
         {
             var executingAssembly = Assembly.GetExecutingAssembly();
 
             var catalog = new AggregateCatalog();
             catalog.Catalogs.Add(new DirectoryCatalog(Path.Combine(Path.GetDirectoryName(executingAssembly.Location), "Plugins"), "*.dll"));
-            catalog.Catalogs.Add(new AssemblyCatalog(executingAssembly));
+            // Uncomment if plugins ever get bundled
+            // catalog.Catalogs.Add(new AssemblyCatalog(executingAssembly));
 
             var container = new CompositionContainer(catalog);
             var pluginManager = new PluginManager();
             container.SatisfyImportsOnce(AttributedModelServices.CreatePart(pluginManager));
+            return pluginManager;
+        }
+
+        public static PluginManager PluginManager { get; private set; }
+
+        static void Main(string[] args)
+        {
+            PluginManager = LoadPlugins();
             
             Shell.Lf();
-            Shell.Info("Nitrate - Grow your Orchard faster");
+            Shell.Info("Nitrate - Grow your project faster");
             Shell.Lf();
 
-            var config = Config.Load(Environment.CurrentDirectory, pluginManager);
+            var config = Config.Load(Environment.CurrentDirectory);
 
             var command = (args.Length > 0) ? args[0] : null;
 
@@ -37,14 +49,14 @@ namespace Nitrate
             {
                 if (command == "init")
                 {
-                    Shell.Info("Initializing project...");
-                    Config.Init(Environment.CurrentDirectory, pluginManager).Save();
+                    Shell.Write("Initializing project...");
+                    Config.Init(Environment.CurrentDirectory, PluginManager.GetSampleConfiguration()).Save();
                     Shell.Success("Done!");
                 }
                 else
                 {
                     Shell.Error("Couldn't find nitrate.json.");
-                    Shell.Info("Run no3 init to initialize a project in the current directory.");
+                    Shell.Write("Run no3 init to initialize a project in the current directory.");
                     Shell.Lf();
                 }
             }
@@ -56,7 +68,7 @@ namespace Nitrate
                     Shell.Error("Init command not available: you are already in a Nitrate project.");
                 else
                 {
-                    pluginManager.Run(command, args.Skip(1).ToArray());
+                    PluginManager.Run(command, args.Skip(1).ToArray());
                 }
             }
 

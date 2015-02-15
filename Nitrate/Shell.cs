@@ -12,28 +12,38 @@ namespace Nitrate
         None,
         Error,
         Standard,
-        All
+        All,
+        Window
     }
 
     public class Shell
     {
-        public static void Error(string message)
+        public static void Write(string message, bool newLine = true, ConsoleColor color = ConsoleColor.Gray)
         {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine(message);
+            Console.ForegroundColor = color;
+            Console.Write(message);
+            if (newLine) Console.WriteLine();
             Console.ResetColor();
         }
 
-        public static void Info(string message)
+        public static void Error(string message, bool newLine = true)
         {
-            Console.WriteLine(message);
+            Write(message, newLine, ConsoleColor.DarkRed);
         }
 
-        public static void Success(string message)
+        public static void Success(string message, bool newLine = true)
         {
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
-            Console.WriteLine(message);
-            Console.ResetColor();
+            Write(message, newLine, ConsoleColor.DarkGreen);
+        }
+
+        public static void Info(string message, bool newLine = true)
+        {
+            Write(message, newLine, ConsoleColor.DarkCyan);
+        }
+
+        public static void Warn(string message, bool newLine = true)
+        {
+            Write(message, newLine, ConsoleColor.Yellow);
         }
 
         public static void Lf()
@@ -46,8 +56,8 @@ namespace Nitrate
             var p = new Process();
             p.StartInfo = new ProcessStartInfo()
             {
-                CreateNoWindow = true,
-                UseShellExecute = false,
+                CreateNoWindow = output != ProcessOutput.Window,
+                UseShellExecute = output == ProcessOutput.Window,
                 RedirectStandardOutput = (output == ProcessOutput.Standard || output == ProcessOutput.All),
                 RedirectStandardError = (output == ProcessOutput.Error || output == ProcessOutput.All),
                 FileName = app,
@@ -59,13 +69,13 @@ namespace Nitrate
 
             if (output == ProcessOutput.Standard || output == ProcessOutput.All)
             {
-                p.OutputDataReceived += (sender, args) => Shell.Info(args.Data);
+                p.OutputDataReceived += (sender, args) => Shell.Info(args.Data, false);
                 p.BeginOutputReadLine();
             }
 
             if (output == ProcessOutput.Error || output == ProcessOutput.All)
             {
-                p.ErrorDataReceived += (sender, args) => Shell.Error(args.Data);
+                p.ErrorDataReceived += (sender, args) => Shell.Error(args.Data, false);
                 p.BeginErrorReadLine();
             }
             p.WaitForExit();

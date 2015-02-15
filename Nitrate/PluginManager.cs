@@ -1,9 +1,11 @@
-﻿using Nitrate.Plugins;
+﻿using Newtonsoft.Json.Linq;
+using Nitrate.Plugins;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Nitrate
@@ -13,46 +15,16 @@ namespace Nitrate
         [ImportMany]
         public IEnumerable<IPlugin> Plugins { get; set; }
 
-        public Dictionary<string, PluginConfigurations> GetDefaultSettings()
+        public Dictionary<string, Dictionary<string, JObject>> GetSampleConfiguration()
         {
-            var configuration = new Dictionary<string, PluginConfigurations>();
+            var configuration = new Dictionary<string, Dictionary<string, JObject>>();
 
             foreach (var plugin in Plugins)
             {
-                configuration.Add(plugin.Name, plugin.SampleSettings);
+                configuration.Add(plugin.Name, plugin.GetSampleConfiguration());
             }
 
             return configuration;
-        }
-
-        public void Configure(Dictionary<string, PluginConfigurations> configuration)
-        {
-            var errors = new List<string>();
-
-            foreach (var pair in configuration)
-            {
-                var plugin = Plugins.FirstOrDefault(p => p.Name.Equals(pair.Key, StringComparison.InvariantCultureIgnoreCase));
-
-                if (plugin == null)
-                {
-                    errors.Add("Unknown plugin: " + pair.Key);
-                    continue;
-                }
-
-                if (!plugin.IsAvailable())
-                {
-                    errors.Add("Unavailable plugin: " + pair.Key);
-                    errors.Add(plugin.InstallationInstructions);
-                    continue;
-                }
-
-                plugin.Configure(pair.Value);
-            }
-
-            if (errors.Count() > 0)
-            {
-                errors.ForEach(e => Shell.Error(e));
-            }
         }
 
         public void Run(string commandName, string[] args)
@@ -63,12 +35,12 @@ namespace Nitrate
                 if (args.Length == 0 || args.Length > 1)
                 {
                     // General help
-                    Shell.Info("Usage: no3 <command> <options>");
+                    Shell.Write("Usage: no3 <command[:configuration]> <options>");
                     Shell.Lf();
-                    Shell.Info("Available Commands:");
+                    Shell.Write("Available Commands:");
                     foreach (var plugin in Plugins)
                     {
-                        Shell.Info(" - " + plugin.Name + ": " + plugin.ShortHelp);
+                        Shell.Write(" - " + plugin.Name + ": " + plugin.Description);
                     }
                     Shell.Lf();
                 }
@@ -81,14 +53,50 @@ namespace Nitrate
                         Shell.Error(args[0] + " is not a command.");
                     else
                     {
-                        Shell.Info("Usage: no3 " + args[0] + " <options>");
+                        Shell.Write("Usage: no3 " + args[0] + " <options>");
                         Shell.Lf();
-                        Shell.Info(plugin.LongHelp);
+                        Shell.Write(plugin.Description);
+                        if (plugin.SubCommands != null)
+                        {
+                            Shell.Lf();
+                            Shell.Write("Available subcommands:");
+                            foreach (var subCommand in plugin.SubCommands)
+                            {
+                                Shell.Lf();
+                                Shell.Write(String.Format(" - {0}: {1}", subCommand.Key, subCommand.Value.Description));
+                                if (!string.IsNullOrWhiteSpace(subCommand.Value.Example))
+                                {
+                                    Shell.Write(String.Format("   example: no3 {0} {1} {2}", args[0], subCommand.Key, subCommand.Value.Example));
+                                }
+                                if (subCommand.Value.Arguments != null && subCommand.Value.Arguments.Count > 0)
+                                {
+                                    Shell.Write("   arguments:");
+                                    foreach (var argument in subCommand.Value.Arguments)
+                                    {
+                                        Shell.Write(string.Format("   - {0}: {1}", argument.Name, argument.Description));
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
             else
             {
+                var configName = String.Empty;
+                var commandParts = commandName.Split(':');
+                switch (commandParts.Length)
+                {
+                    case 1:
+                        break;
+                    case 2:
+                        commandName = commandParts[0];
+                        configName = commandParts[1];
+                        break;
+                    default:
+                        break;
+                }
+
                 var plugin = Plugins.FirstOrDefault(p => p.Name.Equals(commandName, StringComparison.InvariantCultureIgnoreCase));
                 if (plugin != null)
                 {
@@ -101,39 +109,66 @@ namespace Nitrate
                     }
 
                     var subCommand = String.Empty;
-                    if (plugin.SubCommands != null && plugin.SubCommands.Length > 0)
+                    var parsedArguments = new Dictionary<string, string>();
+                    if (plugin.SubCommands != null)
                     {
                         if (args.Length == 0)
                         {
                             Shell.Error("Subcommand missing.");
-                            Shell.Info("Run \"no3 help " + commandName + "\" for help.");
+                            Shell.Write("Run \"no3 help " + commandName + "\" for help.");
                             return;
                         }
 
-                        if (plugin.SubCommands.Contains(args[0]))
+                        if (plugin.SubCommands.Keys.Contains(args[0]))
                         {
                             subCommand = args[0];
                             args = args.Skip(1).ToArray();
+
+                            if (plugin.SubCommands[subCommand].Arguments != null)
+                            {
+                                var clone = new List<Argument>(plugin.SubCommands[subCommand].Arguments);
+
+                                foreach (var arg in args)
+                                {
+                                    var argInfo = clone.FirstOrDefault(c => Regex.IsMatch(arg, c.Regex));
+                                    if (argInfo == null)
+                                    {
+                                        Shell.Error("Invalid argument \"" + arg + "\".");
+                                        Shell.Write("Run \"no3 help " + commandName + "\" for help.");
+                                        return;
+                                    }
+
+                                    clone.Remove(argInfo);
+                                    parsedArguments.Add(argInfo.Name, arg);
+                                }
+                            }
+                            else if (args.Length > 0)
+                            {
+                                Shell.Error("This command does not take arguments.");
+                                return;
+                            }
+
                         }
                         else
                         {
                             Shell.Error("Invalid subcommand \"" + args[0] + "\".");
-                            Shell.Info("Run \"no3 help " + commandName + "\" for help.");
+                            Shell.Write("Run \"no3 help " + commandName + "\" for help.");
                             return;
                         }
                     }
 
-                    var configName = String.Empty;
-                    if (args.Length > 0)
+                    if (string.IsNullOrWhiteSpace(configName))
                     {
-                        if (args[0] == "all" || plugin.Configuration.ContainsKey(args[0]))
+                        foreach (var config in Config.Current.Data.PluginConfigurations[plugin.Name])
                         {
-                            configName = args[0];
-                            args = args.Skip(1).ToArray();
+                            plugin.Execute(config.Key, config.Value, subCommand, parsedArguments);
+                            Shell.Lf();
                         }
                     }
-
-                    plugin.Run(subCommand, configName, args);
+                    else
+                    {
+                        plugin.Execute(configName, Config.Current.Data.PluginConfigurations[plugin.Name][configName], subCommand, parsedArguments);
+                    }
                 }
             }
         }

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,41 +23,34 @@ namespace Nitrate.Plugins
         /// <summary>
         /// Short help line to be shown on the help index.
         /// </summary>
-        string ShortHelp { get; }
+        string Description { get; }
         
         /// <summary>
-        /// Long help text to be shown on the plugin specific help page.
+        /// Name and description of the subcommands supported by this plugin, if any
         /// </summary>
-        string LongHelp { get; }
+        IDictionary<string, SubCommand> SubCommands { get; }
+
+        /// <summary>
+        /// Arguments supported by plugins with no subcommands
+        /// </summary>
+        List<Argument> Arguments { get; }
         
-        /// <summary>
-        /// Name of the subcommands supported by this plugin
-        /// </summary>
-        string[] SubCommands { get; }
-
-        /// <summary>
-        /// Sample settings used when initializing the project
-        /// </summary>
-        PluginConfigurations SampleSettings { get; }
-
         /// <summary>
         /// Runs the plugin with provided arguments
         /// </summary>
         /// <param name="args"></param>
-        void Run(string subCommand, string configName, string[] args);
-        
+        void Execute(string configName, JObject config, string subCommand, Dictionary<string, string> args);
+
+        /// <summary>
+        /// Returns a sample configuration for the plugin
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<string, JObject> GetSampleConfiguration();
+
         /// <summary>
         /// Checks if the plugin is available.
         /// </summary>
         /// <returns></returns>
         bool IsAvailable();
-
-        /// <summary>
-        /// Configures the plugin 
-        /// </summary>
-        /// <param name="settings"></param>
-        void Configure(PluginConfigurations settings);
-
-        PluginConfigurations Configuration { get; }
     }
 }

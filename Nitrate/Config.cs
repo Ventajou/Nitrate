@@ -1,23 +1,64 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Nitrate.Plugins;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Nitrate
 {
+    public class ConfigDictionary<T> : Dictionary<string, T>
+    {
+        public ConfigDictionary()
+            : base(StringComparer.OrdinalIgnoreCase)
+        { }
+
+        public ConfigDictionary(IDictionary<string, T> initializer)
+            : base(StringComparer.OrdinalIgnoreCase)
+        {
+            foreach (var item in initializer)
+            {
+                Add(item.Key, item.Value);
+            }
+        }
+    }
+
     public class ConfigData
     {
         public string Name { get; set; }
         public string Version { get; set; }
-        public Dictionary<string, PluginConfigurations> Configuration { get; set; }
+        public ConfigDictionary<string> Globals { get; set; }
+        public ConfigDictionary<ConfigDictionary<JObject>> PluginConfigurations { get; set; }
+        public ConfigDictionary<List<string>> Sequences { get; set; }
     }
 
     public class Config
     {
-
         const string ConfigName = "nitrate.json";
+        const string LocalConfigName = "nitrate.local.json";
 
-        private Config(string path, PluginManager pluginManager)
+        private static Config _singleton;
+        private string _path;
+        private string _workfilesPath;
+
+        public string Path { get { return _path; } }
+        public ConfigData Data { get; set; }
+        public string WorkfilesPath
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_workfilesPath))
+                {
+                    _workfilesPath = System.IO.Path.Combine(_path, ".nitrate");
+                    if (!Directory.Exists(_workfilesPath)) Directory.CreateDirectory(_workfilesPath);
+                }
+                return _workfilesPath;
+            }
+        }
+
+        public static Config Current { get { return _singleton; } }
+
+        private Config(string path)
         {
             _singleton = this;
             _path = path;
@@ -25,38 +66,42 @@ namespace Nitrate
 
             if (File.Exists(file))
             {
-                Data = JsonConvert.DeserializeObject<ConfigData>(File.ReadAllText(file));
-                pluginManager.Configure(Data.Configuration);
+                var config = JObject.Parse(File.ReadAllText(file));
+                var localConfigFile = System.IO.Path.Combine(path, LocalConfigName);
+                if (File.Exists(localConfigFile))
+                {
+                    var localConfig = JObject.Parse(File.ReadAllText(localConfigFile));
+                    config.Merge(localConfig, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
+                }
+
+                Data = config.ToObject<ConfigData>();
             }
         }
-
-        private static Config _singleton;
-
-        private string _path;
-        public string Path { get { return _path; } }
-
-        public ConfigData Data { get; set; }
-
-        public static Config Current { get { return _singleton; } }
 
         public void Save()
         {
             File.WriteAllText(_path, JsonConvert.SerializeObject(Data, Formatting.Indented));
         }
 
-        public static Config Init(string path, PluginManager pluginManager)
+        public static Config Init(string path, Dictionary<string, Dictionary<string, JObject>> samplePluginConfigurations)
         {
-            var config = new Config(System.IO.Path.Combine(path, ConfigName), pluginManager);
+            var pluginConfig = new ConfigDictionary<ConfigDictionary<JObject>>();
+            foreach(var pair in samplePluginConfigurations)
+            {
+                pluginConfig.Add(pair.Key, new ConfigDictionary<JObject>(pair.Value));
+            }
+
+            var config = new Config(System.IO.Path.Combine(path, ConfigName));
             config.Data = new ConfigData()
             {
                 Name = "Orchard Project",
                 Version = "0.0.0",
-                Configuration = pluginManager.GetDefaultSettings()
+                PluginConfigurations = pluginConfig
             };
             return config;
         }
 
-        public static Config Load(string path, PluginManager pluginManager)
+        public static Config Load(string path)
         {
             DirectoryInfo info;
 
@@ -64,8 +109,9 @@ namespace Nitrate
             {
                 if (File.Exists(System.IO.Path.Combine(path, ConfigName)))
                 {
-                    Shell.Success("Found Nitrate project in: " + path);
-                    return new Config(path, pluginManager);
+                    Shell.Info("Found Nitrate project in: " + path);
+                    Shell.Lf();
+                    return new Config(path);
                 }
 
                 info = Directory.GetParent(path);

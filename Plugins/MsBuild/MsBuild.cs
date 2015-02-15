@@ -7,8 +7,13 @@ using System.Threading.Tasks;
 
 namespace Nitrate.Plugins.MsBuild
 {
+    public class MsBuildConfig
+    {
+        public string Project { get; set; }
+    }
+
     [Export(typeof(IPlugin))]
-    public class MsBuild : BasePlugin
+    public class MsBuild : BasePlugin<MsBuildConfig>
     {
         private const string Program = "msbuild.exe";
 
@@ -17,47 +22,37 @@ namespace Nitrate.Plugins.MsBuild
             get { return "Something's really wrong if you're missing msbuild..."; }
         }
 
-        public override string ShortHelp
+        public override string Description
         {
             get { return "Builds Visual Studio projects and solutions."; }
-        }
-
-        public override PluginConfigurations SampleSettings
-        {
-            get
-            {
-                return new PluginConfigurations() {
-                    {
-                        "Orchard",
-                        new PluginConfiguration() {
-                            { "Project", @"orchard\src\orchard.sln" }
-                        }
-                    }
-                };
-            }
-        }
-
-        public override void Run(string subCommand, string configName, string[] args)
-        {
-            List<string> configs;
-            if (configName == "all" || String.IsNullOrWhiteSpace(configName))
-                configs = new List<string>(Configuration.Keys.ToArray());
-            else
-                configs = new List<string>() { configName };
-            configs.ForEach(c =>
-            {
-                Shell.Info(string.Format("Building {0}...", c));
-                var code = Shell.Run("msbuild.exe", Configuration[c]["Project"], ProcessOutput.Error, Config.Current.Path);
-                if (code == 0)
-                    Shell.Success("Done!");
-                else
-                    Shell.Error(string.Format("{0} build failed."));
-            });
         }
 
         public override bool IsAvailable()
         {
             return Shell.IsAvailable(Program);
+        }
+
+        public override void Execute(string configName, MsBuildConfig config, string subCommand, Dictionary<string, string> args)
+        {
+            Shell.Info(string.Format("Building {0}...", configName));
+            var code = Shell.Run("msbuild.exe", config.Project, ProcessOutput.Window, Config.Current.Path);
+            if (code == 0)
+                Shell.Success("Done!");
+            else
+                Shell.Error(string.Format("{0} build failed."));
+        }
+
+        protected override Dictionary<string, MsBuildConfig> SampleConfiguration()
+        {
+            return new Dictionary<string, MsBuildConfig>()
+            {
+                {
+                    "Orchard", new MsBuildConfig
+                    {
+                        Project = @"orchard\src\orchard.sln"
+                    }
+                }
+            };
         }
     }
 }

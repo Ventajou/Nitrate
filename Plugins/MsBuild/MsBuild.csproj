@@ -7,7 +7,7 @@
     <ProjectGuid>{983FC5E7-4720-4A0D-912F-423C26FFDC61}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Nitrate.Plugin.MsBuild</RootNamespace>
+    <RootNamespace>Nitrate.Plugins.MsBuild</RootNamespace>
     <AssemblyName>MsBuild</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -1,85 +1,92 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 
 namespace Nitrate.Plugins.Git
 {
+    public class GitConfig
+    {
+        public string Repo { get; set; }
+        public string Branch { get; set; }
+        public string Path { get; set; }
+    }
+
     [Export(typeof(IPlugin))]
-    public class Git : BasePlugin
+    public class Git : BasePlugin<GitConfig>
     {
         private const string Program = "git.exe";
+        private static class Commands
+        {
+            public const string Clone = "clone";
+            public const string Update = "update";
+        }
 
         public override string InstallationInstructions
         {
             get { return "Please install git and make sure it's in your PATH."; }
         }
 
-        public override string ShortHelp
+        public override string Description
         {
             get { return "Manages Git repositories."; }
         }
 
-        public override string LongHelp
+        private IDictionary<string, SubCommand> _subCommands;
+        public override IDictionary<string, SubCommand> SubCommands
         {
             get
             {
-                return @"Available subcommands:
- - clone:  clones the repository locally.
- - update: updates the local repository.";
-            }
-        }
-
-        public override string[] SubCommands
-        {
-            get { return new string[] { "clone", "update" }; }
-        }
-
-        public override PluginConfigurations SampleSettings
-        {
-            get
-            {
-                return new PluginConfigurations() {
-                    {
-                      "Orchard",
-                      new PluginConfiguration() {
-                        { "Repo", "https://git01.codeplex.com/orchard" },
-                        { "Branch", "master" },
-                        { "Path", "orchard" }
-                      }
-                    }
-                };
-            }
-        }
-
-        public override void Run(string subCommand, string configName, string[] args)
-        {
-            List<string> configs;
-            if (configName == "all" || String.IsNullOrWhiteSpace(configName))
-                configs = new List<string>(Configuration.Keys.ToArray());
-            else
-                configs = new List<string>() { configName };
-            configs.ForEach(c =>
-            {
-                switch (subCommand)
+                if (_subCommands == null)
                 {
-                    case "clone":
-                        Shell.Info("Cloning " + c + "...");
-                        var errorCode = Shell.Run("git.exe", "clone " + Configuration[c]["Repo"] + " " + Configuration[c]["Path"], ProcessOutput.Error, Config.Current.Path);
-
-                        Shell.Run("git.exe", "checkout " + Configuration[c]["Branch"], ProcessOutput.Error, Config.Current.Path);
-                        Shell.Success("Done!");
-                        break;
-                    case "update":
-                        break;
+                    _subCommands = new Dictionary<string, SubCommand>() { 
+                        { Commands.Clone, new SubCommand() { Description = "clones the repository locally" } },
+                        { Commands.Update, new SubCommand() { Description = "updates the local repository" } }
+                    };
                 }
-            });
+                return _subCommands;
+            }
         }
 
         public override bool IsAvailable()
         {
             return Shell.IsAvailable(Program);
         }
+
+        public override void Execute(string configName, GitConfig config, string subCommand, Dictionary<string, string> args)
+        {
+            switch (subCommand)
+            {
+                case Commands.Clone:
+                    Shell.Write("Cloning " + configName + "...");
+
+                    var errorCode = Shell.Run("git.exe", "clone " + config.Repo + " " + config.Path, ProcessOutput.Window, Config.Current.Path);
+
+                    Shell.Run("git.exe", "checkout " + config.Branch, ProcessOutput.Window, Config.Current.Path);
+                    Shell.Success("Done!");
+                    break;
+
+                case Commands.Update:
+                    break;
+            }
+        }
+
+        protected override Dictionary<string, GitConfig> SampleConfiguration()
+        {
+            return new Dictionary<string, GitConfig>()
+            {
+                {
+                    "Orchard", new GitConfig
+                    {
+                        Repo = "https://git01.codeplex.com/orchard",
+                        Branch = "master",
+                        Path = "orchard"
+                    }
+                }
+            };
+        }
     }
 }
+
