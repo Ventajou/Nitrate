@@ -33,7 +33,10 @@ namespace Nitrate.Plugins
 
         protected abstract Dictionary<string, T> SampleConfiguration();
 
-        public abstract bool IsAvailable();
+        public virtual bool IsAvailable()
+        {
+            return true;
+        }
 
         public void Execute(string configName, JObject config, string subCommand, Dictionary<string, string> args)
         {

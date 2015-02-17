@@ -35,11 +35,6 @@ namespace Nitrate.Plugins.Run
             };
         }
 
-        public override bool IsAvailable()
-        {
-            return true;
-        }
-
         public override void Execute(string configName, RunConfig config, string subCommand, Dictionary<string, string> args)
         {
             Shell.Write("Running " + configName + "...");
