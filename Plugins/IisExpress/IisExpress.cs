@@ -16,6 +16,7 @@ namespace Nitrate.Plugins.IisExpress
         public int Port { get; set; }
         public string Path { get; set; }
         public bool Systray { get; set; }
+        public bool BrowseOnStart { get; set; }
 
         public IisExpressConfig()
         {
@@ -101,6 +102,11 @@ namespace Nitrate.Plugins.IisExpress
                     });
 
                     File.WriteAllText(pidFileName, process.Id.ToString());
+                    if (config.BrowseOnStart)
+                    {
+                        Process.Start("http://localhost:" + config.Port);
+                    }
+                    Shell.Success("Done.");
                     break;
 
                 case Commands.Stop:
@@ -153,7 +159,8 @@ namespace Nitrate.Plugins.IisExpress
                         ClrVersion = "4.0",
                         Port = 8080,
                         Path = @"orchard\src\Orchard.Web",
-                        Systray = true
+                        Systray = true,
+                        BrowseOnStart = true
                     }
                 }
             };
