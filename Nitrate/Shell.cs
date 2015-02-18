@@ -69,13 +69,13 @@ namespace Nitrate
 
             if (output == ProcessOutput.Standard || output == ProcessOutput.All)
             {
-                p.OutputDataReceived += (sender, args) => Shell.Info(args.Data, false);
+                p.OutputDataReceived += (sender, args) => Shell.Write(args.Data);
                 p.BeginOutputReadLine();
             }
 
             if (output == ProcessOutput.Error || output == ProcessOutput.All)
             {
-                p.ErrorDataReceived += (sender, args) => Shell.Error(args.Data, false);
+                p.ErrorDataReceived += (sender, args) => Shell.Error(args.Data);
                 p.BeginErrorReadLine();
             }
             p.WaitForExit();

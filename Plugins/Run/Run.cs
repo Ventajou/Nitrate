@@ -27,7 +27,9 @@ namespace Nitrate.Plugins.Run
                         Commands = new string[] {
                             "git clone",
                             "msbuild",
-                            "sqlserver create -f"
+                            "sqlserver create -f",
+                            "orchard setup",
+                            "iisexpress start"
                         }                    
                     }
                 }
