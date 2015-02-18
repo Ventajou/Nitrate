@@ -12,6 +12,7 @@ namespace Nitrate.Plugins.Git
         public string Repo { get; set; }
         public string Branch { get; set; }
         public string Path { get; set; }
+        public bool SingleBranch { get; set; }
     }
 
     [Export(typeof(IPlugin))]
@@ -60,11 +61,14 @@ namespace Nitrate.Plugins.Git
             switch (subCommand)
             {
                 case Commands.Clone:
-                    Shell.Write("Cloning " + configName + "...");
+                    Shell.Info("Cloning " + configName + "...");
 
                     var errorCode = Shell.Run("git.exe", "clone " + config.Repo + " " + config.Path, ProcessOutput.Window, Config.Current.Path);
 
-                    Shell.Run("git.exe", "checkout " + config.Branch, ProcessOutput.Window, Config.Current.Path);
+                    Shell.Run("git.exe", 
+                              "checkout " + config.Branch + (config.SingleBranch ? " --single-branch" : string.Empty), 
+                              ProcessOutput.Window, 
+                              Config.Current.Path);
                     Shell.Success("Done!");
                     break;
 
@@ -82,7 +86,8 @@ namespace Nitrate.Plugins.Git
                     {
                         Repo = "https://git01.codeplex.com/orchard",
                         Branch = "master",
-                        Path = "orchard"
+                        Path = "orchard",
+                        SingleBranch = true
                     }
                 }
             };
