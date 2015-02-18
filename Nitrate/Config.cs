@@ -29,7 +29,6 @@ namespace Nitrate
         public string Version { get; set; }
         public ConfigDictionary<string> Globals { get; set; }
         public ConfigDictionary<ConfigDictionary<JObject>> PluginConfigurations { get; set; }
-        public ConfigDictionary<List<string>> Sequences { get; set; }
     }
 
     public class Config
