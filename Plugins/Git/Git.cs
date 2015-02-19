@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -58,21 +59,48 @@ namespace Nitrate.Plugins.Git
 
         public override void Execute(string configName, GitConfig config, string subCommand, Dictionary<string, string> args)
         {
+            int errorCode;
+
             switch (subCommand)
             {
                 case Commands.Clone:
                     Shell.Info("Cloning " + configName + "...");
 
-                    var errorCode = Shell.Run("git.exe", "clone " + config.Repo + " " + config.Path, ProcessOutput.Window, Config.Current.Path);
+                    errorCode = Shell.Run("git.exe", 
+                                              String.Format("clone -b {0} {1} \"{2}\" {3}",
+                                                config.Branch,
+                                                config.Repo,
+                                                config.Path,
+                                                config.SingleBranch ? " --single-branch" : string.Empty),
+                                              ProcessOutput.Window, 
+                                              Config.Current.Path);
 
-                    Shell.Run("git.exe", 
-                              "checkout " + config.Branch + (config.SingleBranch ? " --single-branch" : string.Empty), 
-                              ProcessOutput.Window, 
-                              Config.Current.Path);
-                    Shell.Success("Done!");
+                    if (errorCode == 0)
+                    {
+                        Shell.Success("Done!");
+                    }
+                    else
+                    {
+                        Shell.Error("An error has occurred.");
+                    }
                     break;
 
                 case Commands.Update:
+                    Shell.Info("Updating " + configName + "...");
+
+                    errorCode = Shell.Run("git.exe", 
+                                          "pull", 
+                                          ProcessOutput.All, 
+                                          Path.Combine(Config.Current.Path, config.Path));
+
+                    if (errorCode == 0)
+                    {
+                        Shell.Success("Done!");
+                    }
+                    else
+                    {
+                        Shell.Error("An error has occurred.");
+                    }
                     break;
             }
         }
