@@ -3,7 +3,7 @@
 
 A command line tool to help Windows developers quickly configure an environment.
 
-## Gettinging started
+## Getting started
 
 - Build the solution
 - Add Build\Release or Build\Debug to your path
