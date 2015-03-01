@@ -3,4 +3,15 @@
 
 A command line tool to help Windows developers quickly configure an environment.
 
-Documentation coming soon...
+## Getting started
+
+- Build the solution
+- Add Build\Release or Build\Debug to your path
+- Go to an empty directory and run `no3 init`
+- Look at the content of `nitrate.json` for a feel of how things are setup
+- Run `no3 run:setup` to setup a test Orchard environment
+
+## Coming soon
+
+- Chocolatey package
+- Real documentation
