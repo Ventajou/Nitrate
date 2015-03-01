@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nitrate.Plugins.Run</RootNamespace>
     <AssemblyName>Run</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -48,6 +48,7 @@
     <ProjectReference Include="..\..\Nitrate\Nitrate.csproj">
       <Project>{2ebbd740-3801-41fc-aa12-93d3e21e1eae}</Project>
       <Name>Nitrate</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -28,17 +28,17 @@ namespace Nitrate
 
         public static void Error(string message, bool newLine = true)
         {
-            Write(message, newLine, ConsoleColor.DarkRed);
+            Write(message, newLine, ConsoleColor.Red);
         }
 
         public static void Success(string message, bool newLine = true)
         {
-            Write(message, newLine, ConsoleColor.DarkGreen);
+            Write(message, newLine, ConsoleColor.Green);
         }
 
         public static void Info(string message, bool newLine = true)
         {
-            Write(message, newLine, ConsoleColor.DarkCyan);
+            Write(message, newLine, ConsoleColor.Cyan);
         }
 
         public static void Warn(string message, bool newLine = true)

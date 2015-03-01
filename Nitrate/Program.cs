@@ -18,14 +18,14 @@ namespace Nitrate
         {
             var executingAssembly = Assembly.GetExecutingAssembly();
 
-            var catalog = new AggregateCatalog();
-            catalog.Catalogs.Add(new DirectoryCatalog(Path.Combine(Path.GetDirectoryName(executingAssembly.Location), "Plugins"), "*.dll"));
+            var catalog = new SafeDirectoryCatalog(Path.Combine(Path.GetDirectoryName(executingAssembly.Location), "Plugins"));
             // Uncomment if plugins ever get bundled
             // catalog.Catalogs.Add(new AssemblyCatalog(executingAssembly));
 
             var container = new CompositionContainer(catalog);
             var pluginManager = new PluginManager();
             container.SatisfyImportsOnce(AttributedModelServices.CreatePart(pluginManager));
+
             return pluginManager;
         }
 
