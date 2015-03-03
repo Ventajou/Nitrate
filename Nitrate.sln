@@ -36,8 +36,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard", "Plugins\Orchard\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Chocolatey", "Chocolatey", "{17781543-6684-4B69-A4C1-5791257FB7B0}"
 	ProjectSection(SolutionItems) = preProject
-		tools\chocolateyinstall.ps1.bak = tools\chocolateyinstall.ps1.bak
-		tools\chocolateyuninstall.ps1.bak = tools\chocolateyuninstall.ps1.bak
 		nitrate.nuspec = nitrate.nuspec
 	EndProjectSection
 EndProject
