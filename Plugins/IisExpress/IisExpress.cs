@@ -97,8 +97,8 @@ namespace Nitrate.Plugins.IisExpress
                     {
                         FileName = Program,
                         Arguments = arguments.ToString(),
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false
+                        UseShellExecute = false,
+                        CreateNoWindow = true
                     });
 
                     File.WriteAllText(pidFileName, process.Id.ToString());
