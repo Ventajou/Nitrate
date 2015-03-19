@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,7 @@ namespace Nitrate.Plugins.SqlServer
         public string DbUser { get; set; }
         public string DbPass { get; set; }
         public string BackupFile { get; set; }
+        public string UserSchema { get; set; }
     }
 
     [Export(typeof(IPlugin))]
@@ -142,21 +144,59 @@ namespace Nitrate.Plugins.SqlServer
         private static void RestoreDatabase(SqlServerConfig config, Server server)
         {
             var backupPath = Path.Combine(Config.Current.Path, config.BackupFile);
-            Restore restoreDB = new Restore()
+            var restore = new Restore()
             {
                 Database = config.Database,
                 Action = RestoreActionType.Database,
                 ReplaceDatabase = true,
                 NoRecovery = false
             };
-            restoreDB.Devices.AddDevice(backupPath, DeviceType.File);
-            restoreDB.PercentComplete += CompletionStatusInPercent;
-            restoreDB.Complete += Restore_Completed;
-            restoreDB.SqlRestore(server);
+            restore.Devices.AddDevice(backupPath, DeviceType.File);
+            restore.PercentComplete += CompletionStatusInPercent;
+            restore.Complete += Restore_Completed;
+
+            var fileList = restore.ReadFileList(server);
+            var relocationTable = new Dictionary<string, string>();
+            foreach(DataRow row in fileList.Rows)
+            {
+                var logicalName = row["LogicalName"].ToString();
+                var physicalName = Path.GetFileName(row["PhysicalName"].ToString());
+                if (row["Type"].ToString() == "L")
+                {
+                    relocationTable.Add(logicalName, Path.Combine(server.Settings.DefaultLog, physicalName));
+                }
+                else
+                {
+                    relocationTable.Add(logicalName, Path.Combine(server.Settings.DefaultFile, physicalName));
+                }
+            }
+
+            foreach(KeyValuePair<string, string> pair in relocationTable)
+            {
+                restore.RelocateFiles.Add(new RelocateFile(pair.Key, pair.Value));
+            }
+
+            server.KillAllProcesses(restore.Database);
 
             var db = server.Databases[config.Database];
+            if (db != null)
+            {
+                db.DatabaseOptions.UserAccess = DatabaseUserAccess.Single;
+                db.Alter(TerminationClause.RollbackTransactionsImmediately);
+                server.DetachDatabase(restore.Database, false);
+            }
+
+            restore.Action = RestoreActionType.Database;
+            restore.ReplaceDatabase = true;
+
+            restore.SqlRestore(server);
+            db = server.Databases[config.Database];
+            db.SetOnline();
+            server.Refresh();
+            db.DatabaseOptions.UserAccess = DatabaseUserAccess.Multiple;
+            
             EnsureUser(config, server, db);
-            db.SetOwner(config.DbUser, true);
+ //           db.SetOwner(config.DbUser, true);
         }
 
         private static void BackupDatabase(SqlServerConfig config, Server server, bool force)
@@ -248,6 +288,12 @@ namespace Nitrate.Plugins.SqlServer
             var user = new User(db, config.DbUser);
             user.Login = config.DbUser;
             user.Create();
+            user.AddToRole("db_owner");
+            if (!string.IsNullOrWhiteSpace(config.UserSchema))
+            {
+                user.DefaultSchema = config.UserSchema;
+                user.Alter();
+            }
         }
 
         private static void CompletionStatusInPercent(object sender, PercentCompleteEventArgs args)

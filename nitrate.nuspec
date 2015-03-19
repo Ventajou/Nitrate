@@ -4,7 +4,7 @@
   <metadata>
     <!-- Read this before publishing packages to chocolatey.org: https://github.com/chocolatey/chocolatey/wiki/CreatePackages -->
     <id>nitrate</id>
-    <title>Nitrate (Install)</title>
+    <title>Nitrate</title>
     <version>$version$</version>
     <authors>André Rieussec</authors>
     <owners>André Rieussec</owners>
@@ -16,7 +16,7 @@
     <copyright>(c) 2015, André Rieussec</copyright>
     <licenseUrl>https://github.com/Ventajou/Nitrate/blob/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <!--<iconUrl>http://cdn.rawgit.com/__REPLACE_YOUR_REPO__/master/icons/nitrate.png</iconUrl>-->
+    <iconUrl>http://cdn.rawgit.com/ventajou/nitrate/master/nitrate.png</iconUrl>
     <!--<dependencies>
       <dependency id="" version="__VERSION__" />
       <dependency id="" />
