@@ -109,7 +109,7 @@ namespace Nitrate.Plugins.Git
 				{
 					"Orchard", new GitConfig
 					{
-						Repo = "https://git01.codeplex.com/orchard",
+						Repo = "https://github.com/OrchardCMS/Orchard.git",
 						Branch = "master",
 						Path = "orchard",
 						SingleBranch = true
