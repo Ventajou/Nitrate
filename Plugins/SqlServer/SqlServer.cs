@@ -77,7 +77,7 @@ namespace Nitrate.Plugins.SqlServer
 								Arguments = new List<Argument>() {
 									new Argument() {
 										Name = CreateArguments.Force,
-										Description = "Forces recreation of the databsase if it already exists",
+										Description = "Forces deletion of the previous backup if any",
 										Regex = "^-f$"
 									}
 								}
