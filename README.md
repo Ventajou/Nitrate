@@ -14,12 +14,9 @@ needs to run properly on a developer machine.
 
 ## Getting started
 
-Nitrate has been submitted to the Chocolatey repository so hopefully it will soon be easy to install. In the mean time, you can try is using the
-following steps:
+Install Nitrate using [Chocolatey](https://chocolatey.org/):
 
-- Clone the repository
-- Build the solution
-- Add Build\Release or Build\Debug to your PATH
+    choco install nitrate
 
 Go to your project's directory and type:
 
