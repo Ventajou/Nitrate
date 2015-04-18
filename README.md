@@ -26,6 +26,10 @@ This will initialize a default configuration suitable to work with the Orchard C
 configure it to your liking. By adding it to source control alongside your project, you can make your configuration settings available
 to your teammates.
 
+## Using with Orchard CMS
+
+Check out some [detailed instructions](http://ventajou.com/growing-your-orchard-faster-with-some-nitrate) on how to use Nitrate with Orchard.
+
 ## Plugins
 
 The following plugins are available out of the box:
